@@ -9,6 +9,7 @@ And, based on this, work on adding more. Specifically, working towards a telegra
 The simple idea goes like this: the user of the bot is able to search for information using english / other roman scheme languages, and the bot gets the information, although the original knowledge is in an indian language.
 
 # Use-case, and a story line
+```
 Ramesh: Get me a verse that starts with "Karmananye vaadhika raste..."
 Bot: Oh, yes! Here it is in "devanagari":
 कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।
@@ -19,3 +20,4 @@ Bot: Ok, here it is:
 karmaṇyēvādhikārastē mā phalēṣu kadāchana ।
 mā karmaphalahēturbhūrmā tē saṅgōstvakarmaṇi ||
 Bot: Feel free to ask me the same in any other Indian language...
+```
