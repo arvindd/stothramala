@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@sanskrit-coders/sanscript": "^1.1.7"
+  }
+}
