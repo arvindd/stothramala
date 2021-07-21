@@ -1,0 +1,3 @@
+[submodule "langschemes"]
+	path = langschemes
+	url = git@github.com:arvindd/common_maps.git
