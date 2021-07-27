@@ -10,8 +10,15 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
+  <!-- Include all language schemes as embedded resources
+  so that we do not incur runtime load delays. -->
   <ItemGroup>
-    <PackageReference Include="jurassic" Version="3.2.3" />
+    <Content Remove="langschemes\brahmic\**"/>
+    <Content Remove="langschemes\roman\**"/>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="langschemes\brahmic\**"/>
+    <EmbeddedResource Include="langschemes\roman\**"/>
+  </ItemGroup>  
 
 </Project>

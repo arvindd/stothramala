@@ -1,28 +1,72 @@
 // Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
 
+open System
 open System.IO
-open Jurassic
+open System.Reflection
+open System.Collections.Generic
+open System.Text
+open System.Text.Json
+open System.Text.Json.Serialization
+
+type Scheme = 
+  { [<JsonPropertyName("vowels")>] Vowels: string array
+    [<JsonPropertyName("vowel_marks")>] VowelMarks: string array
+    [<JsonPropertyName("yogavaahas")>] Yogavaahas: string array
+    [<JsonPropertyName("virama")>] Virama: string array
+    [<JsonPropertyName("consonants")>] Consonants: string array
+    [<JsonPropertyName("symbols")>] Symbols: string array
+    [<JsonPropertyName("zwj")>] Zwj: string array
+    [<JsonPropertyName("skip")>] Skip: string array
+    [<JsonPropertyName("accents")>] Accents: string array 
+    [<JsonPropertyName("accented_vowel_alternates")>] AccentedVowelAlternates: IDictionary<string, string array>
+    [<JsonPropertyName("candra")>] Candra: string array
+    [<JsonPropertyName("other")>] Other: string array
+    [<JsonPropertyName("extra_consonants")>] ExtraConsonants: string array
+    [<JsonPropertyName("alternates")>] Alternates: IDictionary<string, string array> }
 
 [<EntryPoint>]
 let main _ =
-    let execprog prog args= async {
-        use n=
-            new System.Diagnostics.Process(
-                StartInfo=System.Diagnostics.ProcessStartInfo(
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    FileName = prog,
-                    Arguments=args))
-        n.Start() |> ignore
-        return (n.StandardOutput).ReadToEnd()
+    let skip_sgml = false
+    let syncope = false
+    let assembly = Assembly.GetExecutingAssembly()
+
+    let tryDecodeScheme n = async {
+        let s = assembly.GetManifestResourceStream(n)
+        use r = new StreamReader(s, Encoding.UTF8)
+        let! jstring = (r.ReadToEndAsync() |> Async.AwaitTask)
+
+        try
+            let res = JsonSerializer.Deserialize<Scheme>(jstring)
+            return (Some res)
+        with
+        | exn as ex -> 
+            Console.WriteLine($"Unable to decode {n}: {ex.Message}")
+            return None
     }
 
-    let sanscript (input:string) (fromlang:string) (tolang:string) = async {
-        let args = $"sanscript.js {input} {fromlang} {tolang}"
-        return! execprog "node" args
-    }
+    let schemes = 
+        assembly.GetManifestResourceNames()
+        |> Array.filter (fun n -> n.StartsWith("stothramala"))
+        |> Array.map tryDecodeScheme
+        |> Async.Parallel
+        |> Async.RunSynchronously 
+        |> Array.choose id
 
-    let output = sanscript "sugrIva" "hk" "tamil" |> Async.RunSynchronously
-    printfn "Output is: \n%s" (string output)
+    printfn "%A" schemes
+    // let isRomanScheme name =
+    //     let n = $"stothramala.langschemes.roman.{name}.json"
+    //     schemes |> Array.contains n 
+
+    // let addRomanScheme name =
+    //     let n = $"stothramala.langschemes.roman.{name}.json"
+    //     schemes = Array.append schemes [| n |]
+
+    // let sanscript (input:string) (fromlang:string) (tolang:string) = 0
+
+
+
+    // let assembly = Assembly.GetExecutingAssembly()
+
+    // Console.OutputEncoding = Encoding.UTF8 |> ignore
+    // Console.WriteLine(content)
     0
